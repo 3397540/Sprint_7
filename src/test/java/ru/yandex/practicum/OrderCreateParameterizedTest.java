@@ -3,14 +3,15 @@ package ru.yandex.practicum;
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.Response;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ru.yandex.practicum.constants.URLS;
+import ru.yandex.practicum.utils.OrderHTTPRequestHelper;
+import ru.yandex.practicum.utils.OrderResponseValidationHelper;
 
 @RunWith(Parameterized.class)
-public class OrderCreateParameterizedTest extends BaseTest {
+public class OrderCreateParameterizedTest {
 
 
 
@@ -55,9 +56,11 @@ public class OrderCreateParameterizedTest extends BaseTest {
             "check that order is created")
     public void orderCouldBeCreatedWithAnyColorTest() {
         order = new Orders(firstName, lastName, address, metroStation, phone, rentTime, deliveryDate, comment, color);
-        Response response = sendPostRequest(URLS.ORDERS_CREATE, order);
-        checkResponseCode(response, 201);
-        Integer track = getOrderTrackNumber(response);
-        checkValueNotNullForPayloadParameter(track);
+        OrderHTTPRequestHelper requestHelper = new OrderHTTPRequestHelper();
+        OrderResponseValidationHelper responseHelper = new OrderResponseValidationHelper();
+        Response response = requestHelper.sendPostRequest(URLS.ORDERS_CREATE, order);
+        responseHelper.checkResponseCode(response, 201);
+        Integer track = responseHelper.getOrderTrackNumber(response);
+        responseHelper.checkValueNotNullForPayloadParameter(track);
     }
 }

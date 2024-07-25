@@ -6,10 +6,13 @@ import io.restassured.response.Response;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.After;
 import org.junit.Test;
+import static org.apache.http.HttpStatus.*;
 import ru.yandex.practicum.constants.URLS;
+import ru.yandex.practicum.utils.CourierHTTPRequestHelper;
+import ru.yandex.practicum.utils.CourierResponseValidationtHelper;
 
 
-public class CourierCreateTest extends BaseTest {
+public class CourierCreateTest {
 
     private Courier courier;
 
@@ -24,9 +27,11 @@ public class CourierCreateTest extends BaseTest {
             "courier is created")
     public void courierCouldBeCreatedTest() {
         courier = new Courier(login, password, firstName);
-        Response response = sendPostRequest(URLS.COURIER_CREATE, courier);
-        checkResponseCode(response, 201);
-        validateResponseBody(response, "ok", true);
+        CourierHTTPRequestHelper requestHelper = new CourierHTTPRequestHelper();
+        CourierResponseValidationtHelper responseHelper = new CourierResponseValidationtHelper();
+        Response response = requestHelper.sendPostRequest(URLS.COURIER_CREATE, courier);
+        responseHelper.checkResponseCode(response, SC_CREATED);
+        responseHelper.validateResponseBody(response, "ok", true);
     }
 
     @Test
@@ -37,8 +42,10 @@ public class CourierCreateTest extends BaseTest {
         courier = new Courier();
         courier.setLogin(login);
         courier.setPassword(password);
-        Response response = sendPostRequest(URLS.COURIER_CREATE, courier);
-        checkResponseCode(response, 201);
+        CourierHTTPRequestHelper requestHelper = new CourierHTTPRequestHelper();
+        CourierResponseValidationtHelper responseHelper = new CourierResponseValidationtHelper();
+        Response response = requestHelper.sendPostRequest(URLS.COURIER_CREATE, courier);
+        responseHelper.checkResponseCode(response, SC_CREATED);
     }
 
     @Test
@@ -49,9 +56,11 @@ public class CourierCreateTest extends BaseTest {
         courier = new Courier();
         courier.setLogin(login);
         courier.setFirstName(firstName);
-        Response response = sendPostRequest(URLS.COURIER_CREATE, courier);
-        checkResponseCode(response, 400);
-        validateResponseBody(response, "message", "Недостаточно данных для создания учетной записи");
+        CourierHTTPRequestHelper requestHelper = new CourierHTTPRequestHelper();
+        CourierResponseValidationtHelper responseHelper = new CourierResponseValidationtHelper();
+        Response response = requestHelper.sendPostRequest(URLS.COURIER_CREATE, courier);
+        responseHelper.checkResponseCode(response, SC_BAD_REQUEST);
+        responseHelper.validateResponseBody(response, "message", "Недостаточно данных для создания учетной записи");
     }
 
     @Test
@@ -62,9 +71,11 @@ public class CourierCreateTest extends BaseTest {
         courier = new Courier();
         courier.setPassword(password);
         courier.setFirstName(firstName);
-        Response response = sendPostRequest(URLS.COURIER_CREATE, courier);
-        checkResponseCode(response, 400);
-        validateResponseBody(response, "message", "Недостаточно данных для создания учетной записи");
+        CourierHTTPRequestHelper requestHelper = new CourierHTTPRequestHelper();
+        CourierResponseValidationtHelper responseHelper = new CourierResponseValidationtHelper();
+        Response response = requestHelper.sendPostRequest(URLS.COURIER_CREATE, courier);
+        responseHelper.checkResponseCode(response, SC_BAD_REQUEST);
+        responseHelper.validateResponseBody(response, "message", "Недостаточно данных для создания учетной записи");
     }
 
     @Test
@@ -74,12 +85,14 @@ public class CourierCreateTest extends BaseTest {
     public void courierCouldNotBeCreatedWithDuplicateLoginTest() {
         //Need to create precondition courier, since we do not have any get courier method in api to find any existent courier
         courier = new Courier(login, password, firstName);
-        sendPostRequest(URLS.COURIER_CREATE, courier);
+        CourierHTTPRequestHelper requestHelper = new CourierHTTPRequestHelper();
+        CourierResponseValidationtHelper responseHelper = new CourierResponseValidationtHelper();
+        requestHelper.sendPostRequest(URLS.COURIER_CREATE, courier);
         Courier newCourier = new Courier(login, RandomStringUtils
                 .random(7, true, true), RandomStringUtils.randomAlphabetic(7));
-        Response response = sendPostRequest(URLS.COURIER_CREATE, newCourier);
-        checkResponseCode(response, 409);
-        validateResponseBody(response, "message", "Этот логин уже используется. Попробуйте другой.");
+        Response response =  requestHelper.sendPostRequest(URLS.COURIER_CREATE, newCourier);
+        responseHelper.checkResponseCode(response, SC_CONFLICT);
+        responseHelper.validateResponseBody(response, "message", "Этот логин уже используется. Попробуйте другой.");
     }
 
     @After
@@ -87,11 +100,10 @@ public class CourierCreateTest extends BaseTest {
     @Description("Deleting created for test courier")
     public void deleteCreatedCourier() {
         try {
-            deleteCourierCreatedForTest(courier);
+            CourierHTTPRequestHelper requestHelper = new CourierHTTPRequestHelper();
+            requestHelper.deleteCourierCreatedForTest(courier);
         } catch (Exception e){
             System.out.println("Courier could not be deleted");
         }
     }
-
-
 }

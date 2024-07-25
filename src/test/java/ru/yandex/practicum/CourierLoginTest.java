@@ -5,13 +5,15 @@ import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.Response;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import static org.apache.http.HttpStatus.*;
 import ru.yandex.practicum.constants.URLS;
+import ru.yandex.practicum.utils.CourierHTTPRequestHelper;
+import ru.yandex.practicum.utils.CourierResponseValidationtHelper;
 
 
-public class CourierLoginTest extends BaseTest {
+public class CourierLoginTest {
 
     private Courier courier;
 
@@ -25,7 +27,8 @@ public class CourierLoginTest extends BaseTest {
     @Description("Create a courier for test use")
     public void createCourier() {
         courier = new Courier(login, password, firstName);
-        sendPostRequest(URLS.COURIER_CREATE, courier);
+        CourierHTTPRequestHelper requestHelper = new CourierHTTPRequestHelper();
+        requestHelper.sendPostRequest(URLS.COURIER_CREATE, courier);
     }
 
 
@@ -34,10 +37,12 @@ public class CourierLoginTest extends BaseTest {
     @Description("Send POST request to {{baseURI}}/api/v1/courier/login with login and password and check that " +
             "courier is logged in")
     public void courierCouldLogInTest() {
-        Response response = loginAsCourier(login, password);
-        checkResponseCode(response, 200);
-        Integer id = getCourierId(response);
-        checkValueNotNullForPayloadParameter(id);
+        CourierHTTPRequestHelper requestHelper = new CourierHTTPRequestHelper();
+        CourierResponseValidationtHelper responseHelper = new CourierResponseValidationtHelper();
+        Response response = requestHelper.loginAsCourier(login, password);
+        responseHelper.checkResponseCode(response, SC_OK);
+        Integer id = responseHelper.getCourierId(response);
+        responseHelper.checkValueNotNullForPayloadParameter(id);
     }
 
     @Test
@@ -45,9 +50,11 @@ public class CourierLoginTest extends BaseTest {
     @Description("Send POST request to {{baseURI}}/api/v1/courier with login but without password and " +
             "check that error response is received")
     public void courierCouldNotLogInWithoutPasswordTest() {
-        Response response = loginAsCourier(login, null);
-        checkResponseCode(response, 400);
-        validateResponseBody(response, "message", "Недостаточно данных для входа");
+        CourierHTTPRequestHelper requestHelper = new CourierHTTPRequestHelper();
+        CourierResponseValidationtHelper responseHelper = new CourierResponseValidationtHelper();
+        Response response = requestHelper.loginAsCourier(login, null);
+        responseHelper.checkResponseCode(response, SC_BAD_REQUEST);
+        responseHelper.validateResponseBody(response, "message", "Недостаточно данных для входа");
     }
 
     @Test
@@ -55,9 +62,11 @@ public class CourierLoginTest extends BaseTest {
     @Description("Send POST request to {{baseURI}}/api/v1/courier with password but without login and " +
             "check that error response is received")
     public void courierCouldNotLogInWithoutLoginTest() {
-        Response response = loginAsCourier(null, password);
-        checkResponseCode(response, 400);
-        validateResponseBody(response, "message", "Недостаточно данных для входа");
+        CourierHTTPRequestHelper requestHelper = new CourierHTTPRequestHelper();
+        CourierResponseValidationtHelper responseHelper = new CourierResponseValidationtHelper();
+        Response response = requestHelper.loginAsCourier(null, password);
+        responseHelper.checkResponseCode(response, SC_BAD_REQUEST);
+        responseHelper.validateResponseBody(response, "message", "Недостаточно данных для входа");
     }
 
     @Test
@@ -65,9 +74,11 @@ public class CourierLoginTest extends BaseTest {
     @Description("Send POST request to {{baseURI}}/api/v1/courier without login and password and " +
             "check that error response is received")
     public void courierCouldNotLogInWithoutLoginAndPasswordTest() {
-        Response response = loginAsCourier(null, null);
-        checkResponseCode(response, 400);
-        validateResponseBody(response, "message", "Недостаточно данных для входа");
+        CourierHTTPRequestHelper requestHelper = new CourierHTTPRequestHelper();
+        CourierResponseValidationtHelper responseHelper = new CourierResponseValidationtHelper();
+        Response response = requestHelper.loginAsCourier(null, null);
+        responseHelper.checkResponseCode(response, SC_BAD_REQUEST);
+        responseHelper.validateResponseBody(response, "message", "Недостаточно данных для входа");
     }
 
     @Test
@@ -75,9 +86,11 @@ public class CourierLoginTest extends BaseTest {
     @Description("Send POST request to {{baseURI}}/api/v1/courier with wrong login and " +
             "check that error response is received")
     public void courierCouldNotLogInWithWrongLoginTest() {
-        Response response = loginAsCourier(RandomStringUtils.randomAlphabetic(7), password);
-        checkResponseCode(response, 404);
-        validateResponseBody(response, "message", "Учетная запись не найдена");
+        CourierHTTPRequestHelper requestHelper = new CourierHTTPRequestHelper();
+        CourierResponseValidationtHelper responseHelper = new CourierResponseValidationtHelper();
+        Response response = requestHelper.loginAsCourier(RandomStringUtils.randomAlphabetic(7), password);
+        responseHelper.checkResponseCode(response, SC_NOT_FOUND);
+        responseHelper.validateResponseBody(response, "message", "Учетная запись не найдена");
     }
 
     @Test
@@ -85,9 +98,11 @@ public class CourierLoginTest extends BaseTest {
     @Description("Send POST request to {{baseURI}}/api/v1/courier with wrong password and " +
             "check that error response is received")
     public void courierCouldNotLogInWithWrongPasswordTest() {
-        Response response = loginAsCourier(login, RandomStringUtils.randomAlphabetic(7));
-        checkResponseCode(response, 404);
-        validateResponseBody(response, "message", "Учетная запись не найдена");
+        CourierHTTPRequestHelper requestHelper = new CourierHTTPRequestHelper();
+        CourierResponseValidationtHelper responseHelper = new CourierResponseValidationtHelper();
+        Response response = requestHelper.loginAsCourier(login, RandomStringUtils.randomAlphabetic(7));
+        responseHelper.checkResponseCode(response, SC_NOT_FOUND);
+        responseHelper.validateResponseBody(response, "message", "Учетная запись не найдена");
     }
 
     @After
@@ -95,7 +110,9 @@ public class CourierLoginTest extends BaseTest {
     @Description("Deleting created for test courier")
     public void deleteCreatedCourier() {
         try {
-            deleteCourierCreatedForTest(courier);
+            CourierHTTPRequestHelper requestHelper = new CourierHTTPRequestHelper();
+            CourierResponseValidationtHelper responseHelper = new CourierResponseValidationtHelper();
+            requestHelper.deleteCourierCreatedForTest(courier);
         } catch (Exception e){
             System.out.println("Courier could not be deleted");
         }

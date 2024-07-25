@@ -18,9 +18,16 @@
         <gson.version>2.11.0</gson.version>
         <aspectj.version>1.9.7</aspectj.version>
         <allure.version>2.15.0</allure.version>
+        <projectlombok.version>1.18.22</projectlombok.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${projectlombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>

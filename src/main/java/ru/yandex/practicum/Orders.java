@@ -7,10 +7,19 @@ public class Orders {
     private String address;
     private String metroStation;
     private String phone;
-    private int rentTime;
+    private Integer rentTime;
     private String deliveryDate;
     private String comment;
     private String[] color;
+    private Integer id;
+    private Integer track;
+    private Boolean cancelled;
+    private Boolean finished;
+    private Boolean inDelivery;
+    private String createdAt;
+    private String updatedAt;
+    private Integer status;
+
 
     public Orders() {
     }
@@ -80,11 +89,11 @@ public class Orders {
         this.phone = phone;
     }
 
-    public int getRentTime() {
+    public Integer getRentTime() {
         return rentTime;
     }
 
-    public void setRentTime(int rentTime) {
+    public void setRentTime(Integer rentTime) {
         this.rentTime = rentTime;
     }
 
@@ -110,5 +119,69 @@ public class Orders {
 
     public void setColor(String[] color) {
         this.color = color;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getTrack() {
+        return track;
+    }
+
+    public void setTrack(Integer track) {
+        this.track = track;
+    }
+
+    public Boolean getCancelled() {
+        return cancelled;
+    }
+
+    public void setCancelled(Boolean cancelled) {
+        this.cancelled = cancelled;
+    }
+
+    public Boolean getFinished() {
+        return finished;
+    }
+
+    public void setFinished(Boolean finished) {
+        this.finished = finished;
+    }
+
+    public Boolean getInDelivery() {
+        return inDelivery;
+    }
+
+    public void setInDelivery(Boolean inDelivery) {
+        this.inDelivery = inDelivery;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }
